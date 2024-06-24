@@ -1,0 +1,88 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 0;
+}
+
+.container {
+    width: 90%; /* Set the container width */
+    margin: 0 auto;
+    padding: 20px; /* Optional padding around the container */
+}
+
+.gallery-header {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+    font-weight: bold;
+}
+
+.header-item {
+    flex: 1;
+    text-align: center;
+    padding: 10px;
+    background-color: #f0f0f0; /* Background color for header items */
+    border: 1px solid #ddd; /* Border around header items */
+    border-radius: 8px; /* Optional: Rounded corners for header items */
+}
+
+.row {
+    margin-bottom: 20px;
+    border: 1px solid #ddd; /* Border around each row */
+    background-color: #f9f9f9; /* Background color for each row */
+    border-radius: 8px; /* Optional: Rounded corners for the row */
+    padding: 10px; /* Padding inside each row */
+}
+
+.name {
+    font-size: 18px; /* Adjust font size as needed */
+    font-weight: bold; /* Optional: Make the name bold */
+    margin-bottom: 10px; /* Optional spacing below name */
+}
+
+.image-row {
+    display: flex;
+    flex-wrap: wrap; /* Allow images to wrap to the next line */
+    margin: -5px; /* Negative margin to counteract padding on .image-container */
+}
+
+.image-container {
+    position: relative; /* Position relative to contain absolute positioned child */
+    width: calc(25% - 10px); /* Adjust width of each image container */
+    margin: 5px; /* Spacing between image containers */
+    text-align: center; /* Center align text */
+}
+
+.gallery-image {
+    width: 100%; /* Ensure image fills container width */
+    height: auto; /* Maintain aspect ratio */
+    border-radius: 8px; /* Optional: Add rounded corners */
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Optional: Add shadow effect */
+}
+
+.image-path {
+    position: absolute; /* Position absolute relative to parent .image-container */
+    bottom: 5px; /* Position 5px from the bottom */
+    left: 0; /* Align text to the left */
+    right: 0; /* Align text to the right */
+    font-size: 12px; /* Adjust font size as needed */
+    color: #666; /* Text color */
+    background-color: rgba(255, 255, 255, 0.8); /* Background color with opacity */
+    padding: 5px; /* Padding around text */
+    border-radius: 4px; /* Optional: Add rounded corners */
+    white-space: nowrap; /* Prevent text from wrapping */
+    overflow: hidden; /* Hide overflow text */
+    text-overflow: ellipsis; /* Show ellipsis (...) for overflow text */
+}
+
+@media (max-width: 768px) {
+    .image-container {
+        width: calc(33.33% - 10px); /* Adjust width for smaller screens */
+    }
+}
+
+@media (max-width: 576px) {
+    .image-container {
+        width: calc(50% - 10px); /* Adjust width for smaller screens */
+    }
+}
