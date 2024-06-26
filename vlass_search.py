@@ -13,6 +13,7 @@ from astropy.table import Table
 from astropy.coordinates import SkyCoord
 from astropy.wcs import WCS
 from astropy.time import Time
+from contextlib import closing
 
 
 fname = "VLASS_dyn_summary.php"
@@ -145,27 +146,29 @@ def get_subtiles(tilename, epoch):
     c_tiles = SkyCoord(ra, dec, frame='icrs')
     return fname, c_tiles
 
-def get_cutout(imname, name, c, epoch, save_dir = "images"):
+def get_cutout(imname, name, c, epoch, save_dir="images"):
     print("Generating cutout")
     # Position of source
     ra_deg = c.ra.deg
     dec_deg = c.dec.deg
 
-    print("Cutout centered at position %s, %s" %(ra_deg, dec_deg))
+    print("Cutout centered at position %s, %s" % (ra_deg, dec_deg))
 
     # Open image and establish coordinate system
-    im = pyfits.open(imname, ignore_missing_simple=True)[0].data[0,0]
-    w = WCS(imname)
+    hdul = pyfits.open(imname)
+    im = hdul[0].data[0, 0]
+    w = WCS(hdul[0].header)
+    hdul.close()
 
     # Find the source position in pixels.
     # This will be the center of our image.
     src_pix = w.wcs_world2pix([[ra_deg, dec_deg, 0, 0]], 0)
-    x = src_pix[0,0]
-    y = src_pix[0,1]
+    x = src_pix[0, 0]
+    y = src_pix[0, 1]
 
     # Check if the source is actually in the image
-    pix1 = pyfits.open(imname)[0].header['CRPIX1']
-    pix2 = pyfits.open(imname)[0].header['CRPIX2']
+    pix1 = hdul[0].header['CRPIX1']
+    pix2 = hdul[0].header['CRPIX2']
     badx = np.logical_or(x < 0, x > 2 * pix1)
     bady = np.logical_or(y < 0, y > 2 * pix2)
     if np.logical_and(badx, bady):
@@ -176,26 +179,30 @@ def get_cutout(imname, name, c, epoch, save_dir = "images"):
         # Say we want it to be 12 arcseconds on a side,
         # to match the DES images
         image_dim_arcsec = 12
-        delt1 = pyfits.open(imname)[0].header['CDELT1']
-        delt2 = pyfits.open(imname)[0].header['CDELT2']
-        cutout_size = image_dim_arcsec / 3600     # in degrees
-        dside1 = -cutout_size/2./delt1
-        dside2 = cutout_size/2./delt2
-        
+        delt1 = hdul[0].header['CDELT1']
+        delt2 = hdul[0].header['CDELT2']
+        cutout_size = image_dim_arcsec / 3600  # in degrees
+        dside1 = -cutout_size / 2. / delt1
+        dside2 = cutout_size / 2. / delt2
+
         vmin = -1e-4
         vmax = 1e-3
 
         im_plot_raw = im[int(y - dside1):int(y + dside1), int(x - dside2):int(x + dside2)]
         im_plot = np.ma.masked_invalid(im_plot_raw)
 
-        
         # 3-sigma clipping (find root mean square of values that are not above 3 standard deviations)
         rms_temp = np.ma.std(im_plot)
-        keep = np.ma.abs(im_plot) <= 3*rms_temp
+        keep = np.ma.abs(im_plot) <= 3 * rms_temp
         rms = np.ma.std(im_plot[keep])
 
         # Find peak flux in entire image
-        peak_flux = np.ma.max(im_plot.flatten())
+        # Check if im_plot.flatten() is empty
+        if im_plot.flatten().size == 0:
+            print("Tile has not been imaged at the position of the source")
+            return None
+        else:
+            peak_flux = np.ma.max(im_plot.flatten())
 
         fig, ax = plt.subplots(figsize=(6, 6))  # Create a square figure
         ax.imshow(
@@ -203,7 +210,7 @@ def get_cutout(imname, name, c, epoch, save_dir = "images"):
             extent=[-0.5 * cutout_size * 3600., 0.5 * cutout_size * 3600.,
                     -0.5 * cutout_size * 3600., 0.5 * cutout_size * 3600],
             vmin=vmin, vmax=vmax, cmap='YlOrRd')
-    
+
         peakstr = "Peak Flux %s mJy" % (np.round(peak_flux * 1e3, 3))
         rmsstr = "RMS Flux %s mJy" % (np.round(rms * 1e3, 3))
 
@@ -219,10 +226,10 @@ def get_cutout(imname, name, c, epoch, save_dir = "images"):
         filepath = os.path.join(save_dir, filename)
         plt.savefig(filepath)
         plt.close(fig)
-        
+
         print(f"PNG saved successfully: {filepath}")
 
-        return peak_flux, rms, filepath
+    return peak_flux, rms, filepath
 
 def run_search(name, c, date=None):
     """ 
@@ -237,8 +244,6 @@ def run_search(name, c, date=None):
     print("Running for %s" %name)
     print("Coordinates %s" %c)
     print("Date: %s" %date)
-
-    start_time = time.time()
 
     # Find the VLASS tile(s)
     tiles = get_tiles()
@@ -261,14 +266,17 @@ def run_search(name, c, date=None):
         results = ['images\\unimaged.png', 'images\\unimaged.png', 'images\\unimaged.png']
         list_epochs = ['NA', 'NA', 'NA']
         list_dates = ['NA', 'NA', 'NA']
-        return results
+        return results, list_epochs, list_dates
 
     else:
         for ii,tilename in enumerate(tilenames):
+            start_time = time.time()
             print()
             print("Looking for tile observation for %s" %tilename)
             epoch = epochs[ii]
             obsdate = obsdates[ii]
+            if obsdate != 'Scheduled':
+                obsdate = Time(obsdate, format = 'iso')
             # Adjust name so it works with the version 2 ones for 1.1 and 1.2
             if epoch=='VLASS1.2':
                 epoch = 'VLASS1.2v2'
@@ -281,17 +289,17 @@ def run_search(name, c, date=None):
                 if epoch == current_epoch:
                     # Make list of observed tiles 
                     url_full = 'https://archive-new.nrao.edu/vlass/quicklook/%s/' %(epoch)
-                    urlpath = urlopen(url_full)
-                    # Get site HTML coding
-                    string = (urlpath.read().decode('utf-8')).split("\n")
-                    # clean the HTML elements of trailing and leading whitespace
-                    vals = np.array([val.strip() for val in string])
-                    # Make list of useful html elements
-                    files = np.array(['alt="[DIR]"' in val.strip() for val in string])
-                    useful = vals[files]
-                    # Splice out the name from the link
-                    obsname = np.array([val.split("\"")[7] for val in useful])
-                    observed_current_epoch = np.char.replace(obsname, '/', '')
+                    with closing(urlopen(url_full)) as urlpath:
+                        # Get site HTML coding
+                        string = (urlpath.read().decode('utf-8')).split("\n")
+                        # clean the HTML elements of trailing and leading whitespace
+                        vals = np.array([val.strip() for val in string])
+                        # Make list of useful html elements
+                        files = np.array(['alt="[DIR]"' in val.strip() for val in string])
+                        useful = vals[files]
+                        # Splice out the name from the link
+                        obsname = np.array([val.split("\"")[7] for val in useful])
+                        observed_current_epoch = np.char.replace(obsname, '/', '')
 
                     # Check if tile has been observed yet for the current epoch
                     if epoch not in observed_current_epoch:
@@ -335,29 +343,31 @@ def run_search(name, c, date=None):
                         print("Peak flux is %s uJy" %(peak*1e6))
                         print("RMS is %s uJy" %(rms*1e6))
                         limit = rms*1e6
-                        obsdate = Time(obsdate, format='iso').mjd
                         print("Tile observed on %s" %obsdate)
                         print(limit, obsdate)
+                    else:
+                        png_name = "images\\unimaged.png"
+                        print("Sorry, tile has not been imaged at the position of the source")
 
                 # Wait briefly to ensure handles are closed
-                time.sleep(1)
+                # time.sleep(1)
 
                 # Attempt to delete the file
-                if os.path.exists(imname):
-                    if delete_file(imname):
-                        # File was successfully deleted
-                        print("yay")
-                    else:
-                    # Handle deletion failure as needed
-                        pass
+                # if os.path.exists(imname):
+                #     if delete_file(imname):
+                #        # File was successfully deleted
+                #        print("yay")
+                #    else:
+                #    # Handle deletion failure as needed
+                #        pass
                 # append list elements
                 results.append(png_name)
                 list_epochs.append(epoch)
                 list_dates.append(obsdate)  
 
-        end_time = time.time()  # Record the end time
-        duration = end_time - start_time  # Calculate the duration
-        print(f"Run search completed in {duration:.2f} seconds.")
+                end_time = time.time()
+                duration = end_time - start_time
+                print(f"Run search completed in {duration:.2f} seconds.")
 
         return results, list_epochs, list_dates
 
