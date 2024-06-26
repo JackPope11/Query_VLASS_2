@@ -155,79 +155,78 @@ def get_cutout(imname, name, c, epoch, save_dir="images"):
     print("Cutout centered at position %s, %s" % (ra_deg, dec_deg))
 
     # Open image and establish coordinate system
-    hdul = pyfits.open(imname)
-    im = hdul[0].data[0, 0]
-    w = WCS(hdul[0].header)
-    hdul.close()
+    with pyfits.open(imname) as hdul:
+        im = hdul[0].data[0, 0]
+        w = WCS(hdul[0].header)
+    
+        # Find the source position in pixels.
+        # This will be the center of our image.
+        src_pix = w.wcs_world2pix([[ra_deg, dec_deg, 0, 0]], 0)
+        x = src_pix[0, 0]
+        y = src_pix[0, 1]
 
-    # Find the source position in pixels.
-    # This will be the center of our image.
-    src_pix = w.wcs_world2pix([[ra_deg, dec_deg, 0, 0]], 0)
-    x = src_pix[0, 0]
-    y = src_pix[0, 1]
-
-    # Check if the source is actually in the image
-    pix1 = hdul[0].header['CRPIX1']
-    pix2 = hdul[0].header['CRPIX2']
-    badx = np.logical_or(x < 0, x > 2 * pix1)
-    bady = np.logical_or(y < 0, y > 2 * pix2)
-    if np.logical_and(badx, bady):
-        print("Tile has not been imaged at the position of the source")
-        return None
-    else:
-        # Set the dimensions of the image
-        # Say we want it to be 12 arcseconds on a side,
-        # to match the DES images
-        image_dim_arcsec = 12
-        delt1 = hdul[0].header['CDELT1']
-        delt2 = hdul[0].header['CDELT2']
-        cutout_size = image_dim_arcsec / 3600  # in degrees
-        dside1 = -cutout_size / 2. / delt1
-        dside2 = cutout_size / 2. / delt2
-
-        vmin = -1e-4
-        vmax = 1e-3
-
-        im_plot_raw = im[int(y - dside1):int(y + dside1), int(x - dside2):int(x + dside2)]
-        im_plot = np.ma.masked_invalid(im_plot_raw)
-
-        # 3-sigma clipping (find root mean square of values that are not above 3 standard deviations)
-        rms_temp = np.ma.std(im_plot)
-        keep = np.ma.abs(im_plot) <= 3 * rms_temp
-        rms = np.ma.std(im_plot[keep])
-
-        # Find peak flux in entire image
-        # Check if im_plot.flatten() is empty
-        if im_plot.flatten().size == 0:
+        # Check if the source is actually in the image
+        pix1 = hdul[0].header['CRPIX1']
+        pix2 = hdul[0].header['CRPIX2']
+        badx = np.logical_or(x < 0, x > 2 * pix1)
+        bady = np.logical_or(y < 0, y > 2 * pix2)
+        if np.logical_and(badx, bady):
             print("Tile has not been imaged at the position of the source")
             return None
         else:
-            peak_flux = np.ma.max(im_plot.flatten())
+            # Set the dimensions of the image
+            # Say we want it to be 12 arcseconds on a side,
+            # to match the DES images
+            image_dim_arcsec = 12
+            delt1 = hdul[0].header['CDELT1']
+            delt2 = hdul[0].header['CDELT2']
+            cutout_size = image_dim_arcsec / 3600  # in degrees
+            dside1 = -cutout_size / 2. / delt1
+            dside2 = cutout_size / 2. / delt2
 
-        fig, ax = plt.subplots(figsize=(6, 6))  # Create a square figure
-        ax.imshow(
-            np.flipud(im_plot),
-            extent=[-0.5 * cutout_size * 3600., 0.5 * cutout_size * 3600.,
-                    -0.5 * cutout_size * 3600., 0.5 * cutout_size * 3600],
-            vmin=vmin, vmax=vmax, cmap='YlOrRd')
+            vmin = -1e-4
+            vmax = 1e-3
 
-        peakstr = "Peak Flux %s mJy" % (np.round(peak_flux * 1e3, 3))
-        rmsstr = "RMS Flux %s mJy" % (np.round(rms * 1e3, 3))
+            im_plot_raw = im[int(y - dside1):int(y + dside1), int(x - dside2):int(x + dside2)]
+            im_plot = np.ma.masked_invalid(im_plot_raw)
 
-        title_str = r'$\bf{%s}$' % epoch + '\n' + '%s: %s;\n%s' % (name, peakstr, rmsstr)
-        ax.set_title(title_str, fontsize=10)
-        ax.set_xlabel("Offset in RA (arcsec)")
-        ax.set_ylabel("Offset in Dec (arcsec)")
+            # 3-sigma clipping (find root mean square of values that are not above 3 standard deviations)
+            rms_temp = np.ma.std(im_plot)
+            keep = np.ma.abs(im_plot) <= 3 * rms_temp
+            rms = np.ma.std(im_plot[keep])
 
-        ax.set_aspect('equal')  # Ensure the plot is square
-        ax.figure.tight_layout()  # Adjust layout to fit everything nicely
+            # Find peak flux in entire image
+            # Check if im_plot.flatten() is empty
+            if im_plot.flatten().size == 0:
+                print("Tile has not been imaged at the position of the source")
+                return None
+            else:
+                peak_flux = np.ma.max(im_plot.flatten())
 
-        filename = f"{name}_{epoch}.png"
-        filepath = os.path.join(save_dir, filename)
-        plt.savefig(filepath)
-        plt.close(fig)
+            fig, ax = plt.subplots(figsize=(6, 6))  # Create a square figure
+            ax.imshow(
+                np.flipud(im_plot),
+                extent=[-0.5 * cutout_size * 3600., 0.5 * cutout_size * 3600.,
+                        -0.5 * cutout_size * 3600., 0.5 * cutout_size * 3600],
+                vmin=vmin, vmax=vmax, cmap='YlOrRd')
 
-        print(f"PNG saved successfully: {filepath}")
+            peakstr = "Peak Flux %s mJy" % (np.round(peak_flux * 1e3, 3))
+            rmsstr = "RMS Flux %s mJy" % (np.round(rms * 1e3, 3))
+
+            title_str = r'$\bf{%s}$' % epoch + '\n' + '%s: %s;\n%s' % (name, peakstr, rmsstr)
+            ax.set_title(title_str, fontsize=10)
+            ax.set_xlabel("Offset in RA (arcsec)")
+            ax.set_ylabel("Offset in Dec (arcsec)")
+
+            ax.set_aspect('equal')  # Ensure the plot is square
+            ax.figure.tight_layout()  # Adjust layout to fit everything nicely
+
+            filename = f"{name}_{epoch}.png"
+            filepath = os.path.join(save_dir, filename)
+            plt.savefig(filepath)
+            plt.close(fig)
+
+            print(f"PNG saved successfully: {filepath}")
 
     return peak_flux, rms, filepath
 
@@ -353,13 +352,14 @@ def run_search(name, c, date=None):
                 # time.sleep(1)
 
                 # Attempt to delete the file
-                # if os.path.exists(imname):
-                #     if delete_file(imname):
-                #        # File was successfully deleted
-                #        print("yay")
-                #    else:
-                #    # Handle deletion failure as needed
-                #        pass
+                if os.path.exists(imname):
+                    if delete_file(imname):
+                        # File was successfully deleted
+                        print("yay")
+                    else:
+                    # Handle deletion failure as needed
+                        pass
+                        print("booo")
                 # append list elements
                 results.append(png_name)
                 list_epochs.append(epoch)
