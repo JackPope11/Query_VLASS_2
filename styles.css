@@ -41,39 +41,36 @@ body {
 }
 
 .image-row {
-    display: flex;
-    flex-wrap: wrap; /* Allow images to wrap to the next line */
-    margin: -5px; /* Negative margin to counteract padding on .image-container */
+    font-size: 0; /* Remove whitespace between inline-block elements */
 }
 
 .image-container {
-    position: relative; /* Position relative to contain absolute positioned child */
-    width: calc(25% - 10px); /* Adjust width of each image container */
-    margin: 5px; /* Spacing between image containers */
-    text-align: center; /* Center align text */
+    display: inline-block; /* Display images inline */
+    width: 20%; /* Set the width to 20% to fit five images in a row */
+    text-align: center; /* Center the content horizontally */
+    vertical-align: top; /* Align images to the top */
+    margin: 10px 0; /* Adjust margin as needed */
+    box-sizing: border-box; /* Include padding and border in the element's total width and height */
+    position: relative; /* Position relative for absolute positioning within */
 }
 
 .gallery-image {
-    width: 100%; /* Ensure image fills container width */
+    max-width: 100%; /* Ensure images resize responsively */
     height: auto; /* Maintain aspect ratio */
-    border-radius: 8px; /* Optional: Add rounded corners */
-    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1); /* Optional: Add shadow effect */
 }
 
-.image-path {
-    position: absolute; /* Position absolute relative to parent .image-container */
-    bottom: 5px; /* Position 5px from the bottom */
-    left: 0; /* Align text to the left */
-    right: 0; /* Align text to the right */
-    font-size: 12px; /* Adjust font size as needed */
-    color: #666; /* Text color */
-    background-color: rgba(255, 255, 255, 0.8); /* Background color with opacity */
+.delta-t {
+    display: block; /* Ensure the delta-t text is displayed as a block */
+    margin-top: 5px; /* Space between image and text */
+    font-size: 14px; /* Adjust font size as needed */
+    color: #000000; /* Text color */
     padding: 5px; /* Padding around text */
     border-radius: 4px; /* Optional: Add rounded corners */
     white-space: nowrap; /* Prevent text from wrapping */
     overflow: hidden; /* Hide overflow text */
     text-overflow: ellipsis; /* Show ellipsis (...) for overflow text */
 }
+
 
 @media (max-width: 768px) {
     .image-container {
