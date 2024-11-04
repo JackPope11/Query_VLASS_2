@@ -114,39 +114,37 @@ def get_subtiles(tilename, epoch):
     keep_name = np.array([tilename in val.strip() for val in string])
     # Cross reference the two lists above to keep only the HTML elements with the tile name and a link
     string_keep = vals[np.logical_and(keep_link, keep_name)]
-    # Keep only the links from the HTML elements (they are the 7th element since 6 quote marks precede it)
+    # Keep only the links from the HTML elements (they are the 8th element since 6 quote marks precede it)
     fname = np.array([val.split("\"")[7] for val in string_keep])
     # Take out the element of the link that encodes the RA and declination
     pos_raw = np.array([val.split(".")[4] for val in fname])
-    if '-' in pos_raw[0]:
-        # dec < 0
-        ra_raw = np.array([val.split("-")[0] for val in pos_raw])
-        dec_raw = np.array([val.split("-")[1] for val in pos_raw])
-    else:
-        # dec > 0
-        ra_raw = np.array([val.split("+")[0] for val in pos_raw])
-        dec_raw = np.array([val.split("+")[1] for val in pos_raw])
+
     ra = []
     dec = []
-    for ii,val in enumerate(ra_raw):
-        # 24 hours is the same as hour 0
-        if val[1:3] == '24':
-            rah = '00'
-        else:
-            rah = val[1:3]
-        # calculate RA in hours mins and seconds
-        hms = "%sh%sm%ss" %(rah, val[3:5], val[5:])
+
+    for ii in range(len(pos_raw)):
+        rah = pos_raw[ii][1:3]
+        if rah=="24":
+            rah = "00"
+        ram = pos_raw[ii][3:5]
+        ras = pos_raw[ii][5:7]
+        decd = pos_raw[ii][7:10]
+        decm = pos_raw[ii][10:12]
+        decs = pos_raw[ii][12:]
+        hms = "%sh%sm%ss" %(rah, ram, ras)
         ra.append(hms)
-        # calculate Dec in degrees arcminutes and arcseconds
-        dms = "%sd%sm%ss" %(
-                dec_raw[ii][0:2], dec_raw[ii][2:4], dec_raw[ii][4:])
+        dms = "%sd%sm%ss" %(decd, decm, decs)
         dec.append(dms)
     ra = np.array(ra)
     dec = np.array(dec)
-    c_tiles = SkyCoord(ra, dec, frame='icrs')
+    
+    if ra.flatten().size != 0:
+        c_tiles = SkyCoord(ra, dec, frame='icrs')
+    else: 
+        c_tiles = []
     return fname, c_tiles
 
-def get_cutout(imname, name, c, epoch, save_dir="images"):
+def get_cutout(imname, name, c, epoch, save_dir="images", download_image = True):
     print("Generating cutout")
     # Position of source
     ra_deg = c.ra.deg
@@ -154,81 +152,88 @@ def get_cutout(imname, name, c, epoch, save_dir="images"):
 
     print("Cutout centered at position %s, %s" % (ra_deg, dec_deg))
 
-    # Open image and establish coordinate system
-    with pyfits.open(imname) as hdul:
-        im = hdul[0].data[0, 0]
-        w = WCS(hdul[0].header)
-    
-        # Find the source position in pixels.
-        # This will be the center of our image.
-        src_pix = w.wcs_world2pix([[ra_deg, dec_deg, 0, 0]], 0)
-        x = src_pix[0, 0]
-        y = src_pix[0, 1]
+    try:
+        # Open image and establish coordinate system
+        with pyfits.open(imname) as hdul:
+            im = hdul[0].data[0, 0]
+            w = WCS(hdul[0].header)
+        
+            # Find the source position in pixels.
+            # This will be the center of our image.
+            src_pix = w.wcs_world2pix([[ra_deg, dec_deg, 0, 0]], 0)
+            x = src_pix[0, 0] + 1
+            y = src_pix[0, 1] + 1
+            print(x)
+            print(y)
 
-        # Check if the source is actually in the image
-        pix1 = hdul[0].header['CRPIX1']
-        pix2 = hdul[0].header['CRPIX2']
-        badx = np.logical_or(x < 0, x > 2 * pix1)
-        bady = np.logical_or(y < 0, y > 2 * pix2)
-        if np.logical_and(badx, bady):
-            print("Tile has not been imaged at the position of the source")
-            return None
-        else:
-            # Set the dimensions of the image
-            # Say we want it to be 12 arcseconds on a side,
-            # to match the DES images
-            image_dim_arcsec = 12
-            delt1 = hdul[0].header['CDELT1']
-            delt2 = hdul[0].header['CDELT2']
-            cutout_size = image_dim_arcsec / 3600  # in degrees
-            dside1 = -cutout_size / 2. / delt1
-            dside2 = cutout_size / 2. / delt2
-
-            vmin = -1e-4
-            vmax = 1e-3
-
-            im_plot_raw = im[int(y - dside1):int(y + dside1), int(x - dside2):int(x + dside2)]
-            im_plot = np.ma.masked_invalid(im_plot_raw)
-
-            # 3-sigma clipping (find root mean square of values that are not above 3 standard deviations)
-            rms_temp = np.ma.std(im_plot)
-            keep = np.ma.abs(im_plot) <= 3 * rms_temp
-            rms = np.ma.std(im_plot[keep])
-
-            # Find peak flux in entire image
-            # Check if im_plot.flatten() is empty
-            if im_plot.flatten().size == 0:
+            # Check if the source is actually in the image
+            pix1 = hdul[0].header['CRPIX1']
+            pix2 = hdul[0].header['CRPIX2']
+            badx = np.logical_or(x < 0, x > 2 * pix1)
+            bady = np.logical_or(y < 0, y > 2 * pix2)
+            if np.logical_and(badx, bady):
                 print("Tile has not been imaged at the position of the source")
                 return None
             else:
-                peak_flux = np.ma.max(im_plot.flatten())
+                # Set the dimensions of the image
+                # Say we want it to be 12 arcseconds on a side,
+                # to match the DES images
+                image_dim_arcsec = 12
+                delt1 = hdul[0].header['CDELT1']
+                delt2 = hdul[0].header['CDELT2']
+                cutout_size = image_dim_arcsec / 3600  # in degrees
+                dside1 = -cutout_size / 2. / delt1
+                dside2 = cutout_size / 2. / delt2
 
-            fig, ax = plt.subplots(figsize=(6, 6))  # Create a square figure
-            ax.imshow(
-                np.flipud(im_plot),
-                extent=[-0.5 * cutout_size * 3600., 0.5 * cutout_size * 3600.,
-                        -0.5 * cutout_size * 3600., 0.5 * cutout_size * 3600],
-                vmin=vmin, vmax=vmax, cmap='YlOrRd')
+                vmin = -1e-4
+                vmax = 1e-3
 
-            peakstr = "Peak Flux %s mJy" % (np.round(peak_flux * 1e3, 3))
-            rmsstr = "RMS Flux %s mJy" % (np.round(rms * 1e3, 3))
+                im_plot_raw = im[int(y - dside1):int(y + dside1), int(x - dside2):int(x + dside2)]
+                im_plot = np.ma.masked_invalid(im_plot_raw)
 
-            title_str = r'$\bf{%s}$' % epoch + '\n' + '%s: %s;\n%s' % (name, peakstr, rmsstr)
-            ax.set_title(title_str, fontsize=10)
-            ax.set_xlabel("Offset in RA (arcsec)")
-            ax.set_ylabel("Offset in Dec (arcsec)")
+                # 3-sigma clipping (find root mean square of values that are not above 3 standard deviations)
+                rms_temp = np.ma.std(im_plot)
+                keep = np.ma.abs(im_plot) <= 3 * rms_temp
+                rms = np.ma.std(im_plot[keep])
 
-            ax.set_aspect('equal')  # Ensure the plot is square
-            ax.figure.tight_layout()  # Adjust layout to fit everything nicely
+                # Find peak flux in entire image
+                # Check if im_plot.flatten() is empty
+                if im_plot.flatten().size == 0:
+                    print("Tile has not been imaged at the position of the source")
+                    return None
+                else:
+                    peak_flux = np.ma.max(im_plot.flatten())
 
-            filename = f"{name}_{epoch}.png"
-            filepath = os.path.join(save_dir, filename)
-            plt.savefig(filepath)
-            plt.close(fig)
+                fig, ax = plt.subplots(figsize=(6, 6))  # Create a square figure
+                ax.imshow(
+                    np.flipud(im_plot),
+                    extent=[-0.5 * cutout_size * 3600., 0.5 * cutout_size * 3600.,
+                            -0.5 * cutout_size * 3600., 0.5 * cutout_size * 3600],
+                    vmin=vmin, vmax=vmax, cmap='YlOrRd')
 
-            print(f"PNG saved successfully: {filepath}")
+                peakstr = "Peak Flux %s mJy" % (np.round(peak_flux * 1e3, 3))
+                rmsstr = "RMS Flux %s mJy" % (np.round(rms * 1e3, 3))
 
-    return peak_flux, rms, filepath
+                title_str = r'$\bf{%s}$' % epoch + '\n' + '%s: %s;\n%s' % (name, peakstr, rmsstr)
+                ax.set_title(title_str, fontsize=10)
+                ax.set_xlabel("Offset in RA (arcsec)")
+                ax.set_ylabel("Offset in Dec (arcsec)")
+
+                ax.set_aspect('equal')  # Ensure the plot is square
+                ax.figure.tight_layout()  # Adjust layout to fit everything nicely
+
+                filename = f"{name}_{epoch}.png"
+                filepath = os.path.join(save_dir, filename)
+                plt.savefig(filepath)
+                plt.close(fig)
+
+                print(f"PNG saved successfully: {filepath}")
+
+        return peak_flux, rms, filepath
+
+    except Exception as e:
+        print(f"An error occurred while processing {imname}: {e}")
+        return None
 
 def run_search(name, c, date=None):
     """ 
@@ -260,6 +265,19 @@ def run_search(name, c, date=None):
     list_epochs = []
     list_dates = []
 
+    url_full = 'https://archive-new.nrao.edu/vlass/quicklook/%s/' %(current_epoch)
+    with closing(urlopen(url_full)) as urlpath:
+        # Get site HTML coding
+        string = (urlpath.read().decode('utf-8')).split("\n")
+        # clean the HTML elements of trailing and leading whitespace
+        vals = np.array([val.strip() for val in string])
+        # Make list of useful html elements
+        files = np.array(['alt="[DIR]"' in val.strip() for val in string])
+        useful = vals[files]
+        # Splice out the name from the link
+        obsname = np.array([val.split("\"")[7] for val in useful])
+        observed_current_epoch = np.char.replace(obsname, '/', '')
+
     if tilenames[0] is None:
         print("There is no VLASS tile at this location")
         results = ['images\\unimaged.png', 'images\\unimaged.png', 'images\\unimaged.png']
@@ -274,8 +292,14 @@ def run_search(name, c, date=None):
             print("Looking for tile observation for %s" %tilename)
             epoch = epochs[ii]
             obsdate = obsdates[ii]
-            if obsdate != 'Scheduled':
-                obsdate = Time(obsdate, format = 'iso')
+            if obsdate not in ['Scheduled', 'Not submitted']:
+                try:
+                    obsdate = Time(obsdate, format='iso')
+                except ValueError as e:
+                    print(f"Invalid date format: {obsdate}. Error: {e}")
+                    obsdate = 'Invalid date'
+            else:
+                obsdate = 'Invalid date'
             # Adjust name so it works with the version 2 ones for 1.1 and 1.2
             if epoch=='VLASS1.2':
                 epoch = 'VLASS1.2v2'
@@ -286,20 +310,6 @@ def run_search(name, c, date=None):
 
             if epoch not in past_epochs:
                 if epoch == current_epoch:
-                    # Make list of observed tiles 
-                    url_full = 'https://archive-new.nrao.edu/vlass/quicklook/%s/' %(epoch)
-                    with closing(urlopen(url_full)) as urlpath:
-                        # Get site HTML coding
-                        string = (urlpath.read().decode('utf-8')).split("\n")
-                        # clean the HTML elements of trailing and leading whitespace
-                        vals = np.array([val.strip() for val in string])
-                        # Make list of useful html elements
-                        files = np.array(['alt="[DIR]"' in val.strip() for val in string])
-                        useful = vals[files]
-                        # Splice out the name from the link
-                        obsname = np.array([val.split("\"")[7] for val in useful])
-                        observed_current_epoch = np.char.replace(obsname, '/', '')
-
                     # Check if tile has been observed yet for the current epoch
                     if epoch not in observed_current_epoch:
                         observed = False
@@ -307,7 +317,6 @@ def run_search(name, c, date=None):
                         list_epochs.append(epoch)
                         list_dates.append(obsdate)
                         print("Sorry, tile will be observed later in this epoch")
-    
                 else:
                     observed = False
                     results.append('images\\unimaged.png')
@@ -316,54 +325,60 @@ def run_search(name, c, date=None):
                     print("Sorry, tile will be observed in a later epoch")
                     
             if observed:
-                print("Tile Found:")
-                print(tilename, epoch)
                 subtiles, c_tiles = get_subtiles(tilename, epoch)
-                # Find angular separation from the tiles to the location
-                dist = c.separation(c_tiles)
-                # Find tile with the smallest separation 
-                subtile = subtiles[np.argmin(dist)]
-                url_get = "https://archive-new.nrao.edu/vlass/quicklook/%s/%s/%s" %(
-                        epoch, tilename, subtile)
-                imname="%s.I.iter1.image.pbcor.tt0.subim.fits" %subtile[0:-1]
-                fname = url_get + imname
-                print(fname)
-                png_name = "images\\" + name + "_" + epoch + ".png"
-                if os.path.exists(png_name):
-                    print(f"PNG file {png_name} already exists. Skipping download.")
+                if c_tiles == []:
+                    observed = False
+                    results.append('images\\unimaged.png')
+                    list_epochs.append(epoch)
+                    list_dates.append(obsdate)
+                    print("Sorry, tile is not imaged at the position of the source")
                 else:
-                    cmd = "curl -O %s" %fname
-                    print(cmd)
-                    os.system(cmd)
-                    out = get_cutout(imname, name, c, epoch)
-                # Get image cutout and save FITS data as png
-                    if out is not None:
-                        peak, rms, png_name = out
-                        print("Peak flux is %s uJy" %(peak*1e6))
-                        print("RMS is %s uJy" %(rms*1e6))
-                        limit = rms*1e6
-                        print("Tile observed on %s" %obsdate)
-                        print(limit, obsdate)
+                    print("Tile Found:")
+                    print(tilename, epoch)
+                    # Find angular separation from the tiles to the location
+                    dist = c.separation(c_tiles)
+                    # Find tile with the smallest separation 
+                    subtile = subtiles[np.argmin(dist)]
+                    url_get = "https://archive-new.nrao.edu/vlass/quicklook/%s/%s/%s" %(
+                            epoch, tilename, subtile)
+                    imname="%s.I.iter1.image.pbcor.tt0.subim.fits" %subtile[0:-1]
+                    fname = url_get + imname
+                    print(fname)
+                    png_name = "images\\" + name + "_" + epoch + ".png"
+                    if os.path.exists(png_name):
+                        print(f"PNG file {png_name} already exists. Skipping download.")
                     else:
-                        png_name = "images\\unimaged.png"
-                        print("Sorry, tile has not been imaged at the position of the source")
+                        # Ensure the new_fits directory exists
+                        fits_dir = "new_fits"
+                        if not os.path.exists(fits_dir):
+                            os.makedirs(fits_dir)
 
-                # Wait briefly to ensure handles are closed
-                # time.sleep(1)
+                        # Define the local path for the downloaded FITS file
+                        local_fits_path = os.path.join(fits_dir, imname)
+    
+                        # Download the FITS file to the new_fits directory
+                        cmd = f"curl -o {local_fits_path} {fname}"
+                        print(cmd)
+                        os.system(cmd)
+    
+                        # Call get_cutout with the local path of the FITS file
+                        out = get_cutout(local_fits_path, name, c, epoch)
+                        out = None
 
-                # Attempt to delete the file
-                if os.path.exists(imname):
-                    if delete_file(imname):
-                        # File was successfully deleted
-                        print("yay")
-                    else:
-                    # Handle deletion failure as needed
-                        pass
-                        print("booo")
-                # append list elements
-                results.append(png_name)
-                list_epochs.append(epoch)
-                list_dates.append(obsdate)  
+                        if out is not None:
+                            peak, rms, png_name = out
+                            print("Peak flux is %s uJy" %(peak*1e6))
+                            print("RMS is %s uJy" %(rms*1e6))
+                            limit = rms*1e6
+                            print("Tile observed on %s" %obsdate)
+                            print(limit, obsdate)
+                        else:
+                            png_name = "images\\unimaged.png"
+                            print("Sorry, tile has not been imaged at the position of the source")
+                    # append list elements
+                    results.append(png_name)
+                    list_epochs.append(epoch)
+                    list_dates.append(obsdate)  
 
                 end_time = time.time()
                 duration = end_time - start_time
