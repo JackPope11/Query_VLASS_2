@@ -1,0 +1,121 @@
+Name,c,Tile,Epoch,Date,File_path
+ZTF17aabtvsy,"<SkyCoord (ICRS): (ra, dec) in deg
+    (158.88370833, 37.64972222)>",T20t14,VLASS1.2,2019-05-03,ia_npy_arrays\ZTF17aabtvsy_VLASS1.2v2_array.npy
+ZTF17aabtvsy,"<SkyCoord (ICRS): (ra, dec) in deg
+    (158.88370833, 37.64972222)>",T20t14,VLASS2.2,2021-11-11,ia_npy_arrays\ZTF17aabtvsy_VLASS2.2_array.npy
+ZTF17aabtvsy,"<SkyCoord (ICRS): (ra, dec) in deg
+    (158.88370833, 37.64972222)>",T20t14,VLASS3.2,2024-07-21,ia_npy_arrays\ZTF17aabtvsy_VLASS3.2_array.npy
+ZTF17aacldgo,"<SkyCoord (ICRS): (ra, dec) in deg
+    (47.35145833, -4.89422222)>",T09t05,VLASS1.1,2017-11-28,ia_npy_arrays\ZTF17aacldgo_VLASS1.1v2_array.npy
+ZTF17aacldgo,"<SkyCoord (ICRS): (ra, dec) in deg
+    (47.35145833, -4.89422222)>",T09t05,VLASS2.1,2020-09-13,ia_npy_arrays\ZTF17aacldgo_VLASS2.1_array.npy
+ZTF17aacldgo,"<SkyCoord (ICRS): (ra, dec) in deg
+    (47.35145833, -4.89422222)>",T09t05,VLASS3.1,2023-05-12,ia_npy_arrays\ZTF17aacldgo_VLASS3.1_array.npy
+ZTF17aadlxmv,"<SkyCoord (ICRS): (ra, dec) in deg
+    (127.44829167, 33.90633333)>",T19t11,VLASS1.2,2019-05-07,ia_npy_arrays\ZTF17aadlxmv_VLASS1.2v2_array.npy
+ZTF17aadlxmv,"<SkyCoord (ICRS): (ra, dec) in deg
+    (127.44829167, 33.90633333)>",T19t11,VLASS2.2,2021-12-04,ia_npy_arrays\ZTF17aadlxmv_VLASS2.2_array.npy
+ZTF17aadlxmv,"<SkyCoord (ICRS): (ra, dec) in deg
+    (127.44829167, 33.90633333)>",T19t11,VLASS3.2,2024-07-12,ia_npy_arrays\ZTF17aadlxmv_VLASS3.2_array.npy
+ZTF18aaaonon,"<SkyCoord (ICRS): (ra, dec) in deg
+    (154.77295833, 14.40461111)>",T14t16,VLASS1.1,2017-10-06,ia_npy_arrays\ZTF18aaaonon_VLASS1.1v2_array.npy
+ZTF18aaaonon,"<SkyCoord (ICRS): (ra, dec) in deg
+    (154.77295833, 14.40461111)>",T14t16,VLASS2.1,2020-10-11,ia_npy_arrays\ZTF18aaaonon_VLASS2.1_array.npy
+ZTF18aaaonon,"<SkyCoord (ICRS): (ra, dec) in deg
+    (154.77295833, 14.40461111)>",T14t16,VLASS3.1,2023-01-29,ia_npy_arrays\ZTF18aaaonon_VLASS3.1_array.npy
+ZTF18aaaqexr,"<SkyCoord (ICRS): (ra, dec) in deg
+    (175.77654167, 15.56713889)>",T14t18,VLASS1.1,2017-10-28,ia_npy_arrays\ZTF18aaaqexr_VLASS1.1v2_array.npy
+ZTF18aaaqexr,"<SkyCoord (ICRS): (ra, dec) in deg
+    (175.77654167, 15.56713889)>",T14t18,VLASS2.1,2020-10-11,ia_npy_arrays\ZTF18aaaqexr_VLASS2.1_array.npy
+ZTF18aaaqexr,"<SkyCoord (ICRS): (ra, dec) in deg
+    (175.77654167, 15.56713889)>",T14t18,VLASS3.1,2023-01-17,ia_npy_arrays\ZTF18aaaqexr_VLASS3.1_array.npy
+ZTF18aabdgik,"<SkyCoord (ICRS): (ra, dec) in deg
+    (175.59866667, 10.26408333)>",T13t18,VLASS1.1,2018-01-03,ia_npy_arrays\ZTF18aabdgik_VLASS1.1v2_array.npy
+ZTF18aabdgik,"<SkyCoord (ICRS): (ra, dec) in deg
+    (175.59866667, 10.26408333)>",T13t18,VLASS2.1,2020-07-21,ia_npy_arrays\ZTF18aabdgik_VLASS2.1_array.npy
+ZTF18aabdgik,"<SkyCoord (ICRS): (ra, dec) in deg
+    (175.59866667, 10.26408333)>",T13t18,VLASS3.1,2023-01-25,ia_npy_arrays\ZTF18aabdgik_VLASS3.1_array.npy
+ZTF18aaceepu,"<SkyCoord (ICRS): (ra, dec) in deg
+    (146.99766667, 34.74180556)>",T19t13,VLASS1.2,2019-06-07,ia_npy_arrays\ZTF18aaceepu_VLASS1.2v2_array.npy
+ZTF18aaceepu,"<SkyCoord (ICRS): (ra, dec) in deg
+    (146.99766667, 34.74180556)>",T19t13,VLASS2.2,2021-12-15,ia_npy_arrays\ZTF18aaceepu_VLASS2.2_array.npy
+ZTF18aaceepu,"<SkyCoord (ICRS): (ra, dec) in deg
+    (146.99766667, 34.74180556)>",T19t13,VLASS3.2,2024-07-07,ia_npy_arrays\ZTF18aaceepu_VLASS3.2_array.npy
+ZTF18aadlaxo,"<SkyCoord (ICRS): (ra, dec) in deg
+    (120.64895833, 50.92252778)>",T23t09,VLASS1.2,2019-03-05,ia_npy_arrays\ZTF18aadlaxo_VLASS1.2v2_array.npy
+ZTF18aadlaxo,"<SkyCoord (ICRS): (ra, dec) in deg
+    (120.64895833, 50.92252778)>",T23t09,VLASS2.2,2021-11-13,ia_npy_arrays\ZTF18aadlaxo_VLASS2.2_array.npy
+ZTF18aadlaxo,"<SkyCoord (ICRS): (ra, dec) in deg
+    (120.64895833, 50.92252778)>",T23t09,VLASS3.2,2024-05-25,ia_npy_arrays\ZTF18aadlaxo_VLASS3.2_array.npy
+ZTF18aadxnul,"<SkyCoord (ICRS): (ra, dec) in deg
+    (98.50770833, 43.40902778)>",T21t07,VLASS1.2,2019-04-27,ia_npy_arrays\ZTF18aadxnul_VLASS1.2v2_array.npy
+ZTF18aadxnul,"<SkyCoord (ICRS): (ra, dec) in deg
+    (98.50770833, 43.40902778)>",T21t07,VLASS2.2,2021-10-09,ia_npy_arrays\ZTF18aadxnul_VLASS2.2_array.npy
+ZTF18aadxnul,"<SkyCoord (ICRS): (ra, dec) in deg
+    (98.50770833, 43.40902778)>",T21t07,VLASS3.2,2024-06-15,ia_npy_arrays\ZTF18aadxnul_VLASS3.2_array.npy
+ZTF18aadzfso,"<SkyCoord (ICRS): (ra, dec) in deg
+    (106.823625, 43.31641667)>",T21t08,VLASS1.2,2019-05-16,ia_npy_arrays\ZTF18aadzfso_VLASS1.2v2_array.npy
+ZTF18aadzfso,"<SkyCoord (ICRS): (ra, dec) in deg
+    (106.823625, 43.31641667)>",T21t08,VLASS2.2,2021-10-17,ia_npy_arrays\ZTF18aadzfso_VLASS2.2_array.npy
+ZTF18aadzfso,"<SkyCoord (ICRS): (ra, dec) in deg
+    (106.823625, 43.31641667)>",T21t08,VLASS3.2,2024-06-09,ia_npy_arrays\ZTF18aadzfso_VLASS3.2_array.npy
+ZTF18aaemivw,"<SkyCoord (ICRS): (ra, dec) in deg
+    (158.427875, 39.49069444)>",T20t14,VLASS1.2,2019-05-03,ia_npy_arrays\ZTF18aaemivw_VLASS1.2v2_array.npy
+ZTF18aaemivw,"<SkyCoord (ICRS): (ra, dec) in deg
+    (158.427875, 39.49069444)>",T20t14,VLASS2.2,2021-11-11,ia_npy_arrays\ZTF18aaemivw_VLASS2.2_array.npy
+ZTF18aaemivw,"<SkyCoord (ICRS): (ra, dec) in deg
+    (158.427875, 39.49069444)>",T20t14,VLASS3.2,2024-07-21,ia_npy_arrays\ZTF18aaemivw_VLASS3.2_array.npy
+ZTF18aaeqjmc,"<SkyCoord (ICRS): (ra, dec) in deg
+    (115.49429167, 23.17647222)>",T16t11,VLASS1.2,2019-04-14,ia_npy_arrays\ZTF18aaeqjmc_VLASS1.2v2_array.npy
+ZTF18aaeqjmc,"<SkyCoord (ICRS): (ra, dec) in deg
+    (115.49429167, 23.17647222)>",T16t11,VLASS2.2,2021-12-13,ia_npy_arrays\ZTF18aaeqjmc_VLASS2.2_array.npy
+ZTF18aaeqjmc,"<SkyCoord (ICRS): (ra, dec) in deg
+    (115.49429167, 23.17647222)>",T16t11,VLASS3.2,2024-05-04,ia_npy_arrays\ZTF18aaeqjmc_VLASS3.2_array.npy
+ZTF18aaermez,"<SkyCoord (ICRS): (ra, dec) in deg
+    (153.17870833, 39.37388889)>",T20t13,VLASS1.2,2019-04-26,ia_npy_arrays\ZTF18aaermez_VLASS1.2v2_array.npy
+ZTF18aaermez,"<SkyCoord (ICRS): (ra, dec) in deg
+    (153.17870833, 39.37388889)>",T20t13,VLASS2.2,2021-12-06,ia_npy_arrays\ZTF18aaermez_VLASS2.2_array.npy
+ZTF18aaermez,"<SkyCoord (ICRS): (ra, dec) in deg
+    (153.17870833, 39.37388889)>",T20t13,VLASS3.2,2024-08-03,ia_npy_arrays\ZTF18aaermez_VLASS3.2_array.npy
+ZTF18aaezzww,"<SkyCoord (ICRS): (ra, dec) in deg
+    (126.18016667, 22.74822222)>",T16t12,VLASS1.2,2019-04-13,ia_npy_arrays\ZTF18aaezzww_VLASS1.2v2_array.npy
+ZTF18aaezzww,"<SkyCoord (ICRS): (ra, dec) in deg
+    (126.18016667, 22.74822222)>",T16t12,VLASS2.2,2021-12-14,ia_npy_arrays\ZTF18aaezzww_VLASS2.2_array.npy
+ZTF18aaezzww,"<SkyCoord (ICRS): (ra, dec) in deg
+    (126.18016667, 22.74822222)>",T16t12,VLASS3.2,2024-06-19,ia_npy_arrays\ZTF18aaezzww_VLASS3.2_array.npy
+ZTF18aafdigb,"<SkyCoord (ICRS): (ra, dec) in deg
+    (106.75175, 27.06894444)>",T17t10,VLASS1.2,2019-04-19,ia_npy_arrays\ZTF18aafdigb_VLASS1.2v2_array.npy
+ZTF18aafdigb,"<SkyCoord (ICRS): (ra, dec) in deg
+    (106.75175, 27.06894444)>",T17t10,VLASS2.2,2021-12-05,ia_npy_arrays\ZTF18aafdigb_VLASS2.2_array.npy
+ZTF18aafdigb,"<SkyCoord (ICRS): (ra, dec) in deg
+    (106.75175, 27.06894444)>",T17t10,VLASS3.2,2024-07-14,ia_npy_arrays\ZTF18aafdigb_VLASS3.2_array.npy
+ZTF18aafpfwr,"<SkyCoord (ICRS): (ra, dec) in deg
+    (104.34420833, 21.67091667)>",T16t10,VLASS1.2,2019-03-29,ia_npy_arrays\ZTF18aafpfwr_VLASS1.2v2_array.npy
+ZTF18aafpfwr,"<SkyCoord (ICRS): (ra, dec) in deg
+    (104.34420833, 21.67091667)>",T16t10,VLASS2.2,2021-12-14,ia_npy_arrays\ZTF18aafpfwr_VLASS2.2_array.npy
+ZTF18aafpfwr,"<SkyCoord (ICRS): (ra, dec) in deg
+    (104.34420833, 21.67091667)>",T16t10,VLASS3.2,2024-06-19,ia_npy_arrays\ZTF18aafpfwr_VLASS3.2_array.npy
+ZTF18aafzers,"<SkyCoord (ICRS): (ra, dec) in deg
+    (123.02395833, 29.40394444)>",T18t11,VLASS1.2,2019-04-13,ia_npy_arrays\ZTF18aafzers_VLASS1.2v2_array.npy
+ZTF18aafzers,"<SkyCoord (ICRS): (ra, dec) in deg
+    (123.02395833, 29.40394444)>",T18t11,VLASS2.2,2021-11-29,ia_npy_arrays\ZTF18aafzers_VLASS2.2_array.npy
+ZTF18aafzers,"<SkyCoord (ICRS): (ra, dec) in deg
+    (123.02395833, 29.40394444)>",T18t11,VLASS3.2,2024-07-06,ia_npy_arrays\ZTF18aafzers_VLASS3.2_array.npy
+ZTF18aagrtxs,"<SkyCoord (ICRS): (ra, dec) in deg
+    (198.60604167, 50.97769444)>",T23t14,VLASS1.1,2017-11-19,ia_npy_arrays\ZTF18aagrtxs_VLASS1.1v2_array.npy
+ZTF18aagrtxs,"<SkyCoord (ICRS): (ra, dec) in deg
+    (198.60604167, 50.97769444)>",T23t14,VLASS2.1,2020-08-01,ia_npy_arrays\ZTF18aagrtxs_VLASS2.1_array.npy
+ZTF18aagrtxs,"<SkyCoord (ICRS): (ra, dec) in deg
+    (198.60604167, 50.97769444)>",T23t14,VLASS3.1,2023-02-04,ia_npy_arrays\ZTF18aagrtxs_VLASS3.1_array.npy
+ZTF18aagstdc,"<SkyCoord (ICRS): (ra, dec) in deg
+    (237.51479167, 42.08847222)>",T21t16,VLASS1.2,2019-03-28,ia_npy_arrays\ZTF18aagstdc_VLASS1.2v2_array.npy
+ZTF18aagstdc,"<SkyCoord (ICRS): (ra, dec) in deg
+    (237.51479167, 42.08847222)>",T21t16,VLASS2.2,2021-10-08,ia_npy_arrays\ZTF18aagstdc_VLASS2.2_array.npy
+ZTF18aagstdc,"<SkyCoord (ICRS): (ra, dec) in deg
+    (237.51479167, 42.08847222)>",T21t16,VLASS3.2,2024-06-21,ia_npy_arrays\ZTF18aagstdc_VLASS3.2_array.npy
+ZTF18aagtcxj,"<SkyCoord (ICRS): (ra, dec) in deg
+    (248.048125, 42.71336111)>",T21t17,VLASS1.2,2019-05-04,ia_npy_arrays\ZTF18aagtcxj_VLASS1.2v2_array.npy
+ZTF18aagtcxj,"<SkyCoord (ICRS): (ra, dec) in deg
+    (248.048125, 42.71336111)>",T21t17,VLASS2.2,2021-11-14,ia_npy_arrays\ZTF18aagtcxj_VLASS2.2_array.npy
+ZTF18aagtcxj,"<SkyCoord (ICRS): (ra, dec) in deg
+    (248.048125, 42.71336111)>",T21t17,VLASS3.2,2024-06-12,ia_npy_arrays\ZTF18aagtcxj_VLASS3.2_array.npy
